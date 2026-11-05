@@ -3,7 +3,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
  */
 package proyecto_final;
-
+import dao.ClienteDAO;
+import modelo.Cliente;
+import java.sql.SQLException;
 /**
  *
  * @author Hplay
@@ -20,6 +22,7 @@ public class Proyecto_final {
         } catch (java.sql.SQLException e) {
             System.out.println("Conexion incorrecta: " + e.getMessage());
         }
+        
         
     }//fin del main
     
