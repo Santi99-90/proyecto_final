@@ -8,6 +8,7 @@ import modelo.Cliente;
 import java.sql.SQLException;
 import dao.CajeroDAO;
 import modelo.Cajero;
+import interfaz.VentanaInicio;
 /**
  *
  * @author Hplay
@@ -19,17 +20,8 @@ public class Proyecto_final {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        try {
-            CajeroDAO cajeroDAO = new CajeroDAO();
-            for (Cajero c : cajeroDAO.listar()) {
-                System.out.println("Cajero " + c.getId() + " | 10k: " + c.getNdiez()
-                    + " | 20k: " + c.getNveinte() + " | 50k: " + c.getNcincuenta()
-                    + " | 100k: " + c.getNcien() + " | Estado: " + c.getEstado());
-
-            }
-        } catch (SQLException e) {
-            System.out.println("Error en el sql: " + e.getMessage());
-        }
+        VentanaInicio p = new VentanaInicio();
+        p.setVisible(true);
         
         
     }//fin del main
