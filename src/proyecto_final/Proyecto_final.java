@@ -6,6 +6,8 @@ package proyecto_final;
 import dao.ClienteDAO;
 import modelo.Cliente;
 import java.sql.SQLException;
+import dao.CajeroDAO;
+import modelo.Cajero;
 /**
  *
  * @author Hplay
@@ -17,10 +19,16 @@ public class Proyecto_final {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        try (java.sql.Connection con = conexion.Conexion.conectar()) {
-            System.out.println("Conexion correcta");
-        } catch (java.sql.SQLException e) {
-            System.out.println("Conexion incorrecta: " + e.getMessage());
+        try {
+            CajeroDAO cajeroDAO = new CajeroDAO();
+            for (Cajero c : cajeroDAO.listar()) {
+                System.out.println("Cajero " + c.getId() + " | 10k: " + c.getNdiez()
+                    + " | 20k: " + c.getNveinte() + " | 50k: " + c.getNcincuenta()
+                    + " | 100k: " + c.getNcien() + " | Estado: " + c.getEstado());
+
+            }
+        } catch (SQLException e) {
+            System.out.println("Error en el sql: " + e.getMessage());
         }
         
         
