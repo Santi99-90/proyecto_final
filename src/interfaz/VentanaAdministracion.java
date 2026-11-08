@@ -3,13 +3,18 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package interfaz;
-
+import dao.ClienteDAO;
+import modelo.Cliente;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author Hplay
  */
 public class VentanaAdministracion extends javax.swing.JFrame {
-    
+    private ClienteDAO clienteDAO = new ClienteDAO();
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(VentanaAdministracion.class.getName());
 
     /**
@@ -17,7 +22,39 @@ public class VentanaAdministracion extends javax.swing.JFrame {
      */
     public VentanaAdministracion() {
         initComponents();
+        setLocationRelativeTo(null);
+        cargarTablaClientes();
     }
+    
+    private void mostrarClientes(ArrayList<Cliente> lista){
+        DefaultTableModel modelo = (DefaultTableModel) tablaClientes.getModel();
+        modelo.setRowCount(0);
+        for (Cliente c : lista) {
+            modelo.addRow(new Object[]{c.getId(), c.getNombre(), c.getApellido(),c.getTelefono(), c.getCiudad(), c.getNcuenta(), c.getSaldo()});
+        }
+    }
+    
+    private void cargarTablaClientes(){
+        try {
+            mostrarClientes(clienteDAO.listar());
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error al cargar los clientes: " + ex.getMessage());
+        }
+    }
+    
+    private void limpiarCamposClientes(){
+        txtIdCliente.setText("");
+        txtNombre.setText("");
+        txtApellido.setText("");
+        txtTelefono.setText("");
+        txtCiudad.setText("");
+        txtCuenta.setText("");
+        txtSaldo.setText("");
+        txtMonto.setText("");
+        tablaClientes.clearSelection();
+    }
+    
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -116,12 +153,32 @@ public class VentanaAdministracion extends javax.swing.JFrame {
         jLabel7.setText("Saldo:");
 
         btnAgregarCliente.setText("Agregar");
+        btnAgregarCliente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAgregarClienteActionPerformed(evt);
+            }
+        });
 
         btnEditarCliente.setText("Editar");
+        btnEditarCliente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarClienteActionPerformed(evt);
+            }
+        });
 
         btnEliminarCliente.setText("Eliminar");
+        btnEliminarCliente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarClienteActionPerformed(evt);
+            }
+        });
 
         btnLimpiarCliente.setText("Limpiar");
+        btnLimpiarCliente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLimpiarClienteActionPerformed(evt);
+            }
+        });
 
         jLabel8.setText("Buscar:");
 
@@ -150,7 +207,20 @@ public class VentanaAdministracion extends javax.swing.JFrame {
             new String [] {
                 "Id", "Nombre", "Apellido", "Telefono", "Ciudad", "Cuenta", "Saldo"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tablaClientes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaClientesMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tablaClientes);
 
         javax.swing.GroupLayout jClientesLayout = new javax.swing.GroupLayout(jClientes);
@@ -260,8 +330,8 @@ public class VentanaAdministracion extends javax.swing.JFrame {
                             .addComponent(txtTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jClientesLayout.createSequentialGroup()
                         .addGap(89, 89, 89)
-                        .addGroup(jClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnBuscarNombre)
+                        .addGroup(jClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnBuscarNombre, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(btnBuscarId))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btnMostrarTodos)))
@@ -307,7 +377,15 @@ public class VentanaAdministracion extends javax.swing.JFrame {
             new String [] {
                 "Id", "10.000", "20.000", "50.000", "100.000", "Total", "Estado"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane2.setViewportView(tablaCajeros);
 
         jLabel13.setText("Id:");
@@ -559,6 +637,201 @@ public class VentanaAdministracion extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void tablaClientesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaClientesMouseClicked
+        // TODO add your handling code here:
+        int fila = tablaClientes.getSelectedRow();
+        if (fila == -1) {
+            return;
+        }
+        
+        txtIdCliente.setText(tablaClientes.getValueAt(fila, 0).toString());
+        txtNombre.setText(tablaClientes.getValueAt(fila, 1).toString());
+        txtApellido.setText(tablaClientes.getValueAt(fila, 2).toString());
+        txtTelefono.setText(tablaClientes.getValueAt(fila, 3).toString());
+        txtCiudad.setText(tablaClientes.getValueAt(fila, 4).toString());
+        txtCuenta.setText(tablaClientes.getValueAt(fila, 5).toString());
+        txtSaldo.setText(tablaClientes.getValueAt(fila, 6).toString());
+    }//GEN-LAST:event_tablaClientesMouseClicked
+
+    private void btnLimpiarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarClienteActionPerformed
+        // TODO add your handling code here:
+        limpiarCamposClientes();
+    }//GEN-LAST:event_btnLimpiarClienteActionPerformed
+
+    private void btnAgregarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarClienteActionPerformed
+        // TODO add your handling code here:
+        if (!txtIdCliente.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ese cliente ya existe, presione Limpiar para agregar uno nuevo");
+            return;
+        }
+        
+        if (txtNombre.getText().trim().isEmpty() || txtApellido.getText().trim().isEmpty() || txtTelefono.getText().trim().isEmpty() || txtCiudad.getText().trim().isEmpty()|| txtCuenta.getText().trim().isEmpty() || txtSaldo.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor rellene todos los campos");
+            return;
+        }
+        
+        int cuenta;
+        double saldo;
+        try {
+            cuenta = Integer.parseInt(txtCuenta.getText().trim());
+            saldo = Double.parseDouble(txtSaldo.getText().trim());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "El numero de cuenta y el saldo deben ser numeros");
+            return;
+        }
+        
+        if (cuenta <= 0 || saldo < 0) {
+            JOptionPane.showMessageDialog(this, "La cuenta debe ser mayor a 0 y el saldo no puede ser negativo");
+            return;
+        }
+        
+        try {
+            if (clienteDAO.buscarPorCuenta(cuenta) != null) {
+                JOptionPane.showMessageDialog(this, "Ese numero de cuenta ya existe");
+                return;
+            }
+            
+            Cliente nuevo = new Cliente();
+            nuevo.setNombre(txtNombre.getText().trim());
+            nuevo.setApellido(txtApellido.getText().trim());
+            nuevo.setTelefono(txtTelefono.getText().trim());
+            nuevo.setCiudad(txtCiudad.getText().trim());
+            nuevo.setNcuenta(cuenta);
+            nuevo.setSaldo(saldo);
+            if (clienteDAO.agregar(nuevo)) {
+                JOptionPane.showMessageDialog(this, "Cliente agregado correctamente");
+                cargarTablaClientes();
+                limpiarCamposClientes();
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "No se pudo agregar el cliente");
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error en el SQL: " + ex.getMessage());
+        }
+        
+    }//GEN-LAST:event_btnAgregarClienteActionPerformed
+
+    private void btnEditarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarClienteActionPerformed
+        // TODO add your handling code here:
+        if (txtIdCliente.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Seleccione un cliente en la tabla");
+            return;
+        }
+        if (txtNombre.getText().trim().isEmpty() || txtApellido.getText().trim().isEmpty() || txtTelefono.getText().trim().isEmpty() || txtCiudad.getText().trim().isEmpty()|| txtCuenta.getText().trim().isEmpty() || txtSaldo.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor rellene todos los campos");
+            return;
+        }
+        
+        int id = Integer.parseInt(txtIdCliente.getText());
+        int cuenta;
+        try {
+            cuenta = Integer.parseInt(txtCuenta.getText().trim());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "la cuenta tiene que ser un numero");
+            return;
+        }
+        if (cuenta <= 0) {
+            JOptionPane.showMessageDialog(this, "la cuenta debe ser mayor que 0");
+            return;
+        }
+        
+        try {
+            Cliente actual = clienteDAO.buscarPorId(id);
+            if (actual == null) {
+                JOptionPane.showMessageDialog(this, "el cliente no existe");
+                cargarTablaClientes();
+                limpiarCamposClientes();
+                return;
+            }
+            if (actual.getEstado() == 1) {
+                JOptionPane.showMessageDialog(this, "el cliente esta ocupado en otra operacion");
+                return;
+            }
+            
+            Cliente otro = clienteDAO.buscarPorCuenta(cuenta);
+            if (otro != null && otro.getId() != id) {
+                JOptionPane.showMessageDialog(this, "Ese numero de cuenta le pertenece a otro cliente");
+                return;
+            }
+            
+            boolean editado;
+            clienteDAO.cambiarEstado(id, 1);
+            try {
+                Cliente c = new Cliente();
+                c.setId(id);
+                c.setNombre(txtNombre.getText().trim());
+                c.setApellido(txtApellido.getText().trim());
+                c.setTelefono(txtTelefono.getText().trim());
+                c.setCiudad(txtCiudad.getText().trim());
+                c.setNcuenta(cuenta);   
+                editado = clienteDAO.editar(c);
+            } finally {
+                clienteDAO.cambiarEstado(id, 0);
+            }
+            if (editado) {
+                JOptionPane.showMessageDialog(this, "Cliente editado correctamente");
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "No se pudo editar el cliente");
+            }
+            cargarTablaClientes();
+            limpiarCamposClientes();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error en el SQL: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_btnEditarClienteActionPerformed
+
+    private void btnEliminarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarClienteActionPerformed
+        // TODO add your handling code here:
+        if (txtIdCliente.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Seleccione un cliente en la tabla");
+            return;
+        }
+         int id = Integer.parseInt(txtIdCliente.getText());
+         String mensaje = "¿Seguro que desea eliminar a " + txtNombre.getText() + " " + txtApellido.getText() + "?";
+         if (!txtSaldo.getText().equals("0.0")) {
+            mensaje += "\neste cliente todavía tiene saldo: " + txtSaldo.getText();
+        }
+        
+        int opcion = JOptionPane.showConfirmDialog(this, mensaje, "confirmar", JOptionPane.YES_NO_OPTION);
+        if (opcion != JOptionPane.YES_OPTION) {
+            return;
+        }
+        try {
+            Cliente actual = clienteDAO.buscarPorId(id);
+            if (actual == null) {
+                JOptionPane.showMessageDialog(this, "el cliente no existe");
+                cargarTablaClientes();
+                limpiarCamposClientes();
+                return;
+            }
+            if (actual.getEstado() == 1) {
+                JOptionPane.showMessageDialog(this, "el cliente esta ocupado en otra operacion");
+                return;
+            }
+            
+            boolean eliminado;
+            clienteDAO.cambiarEstado(id, 1);
+            try {
+                eliminado = clienteDAO.eliminar(id);
+            } finally {
+                clienteDAO.cambiarEstado(id, 0);
+            }
+            if (eliminado) {
+                JOptionPane.showMessageDialog(this, "Cliente eliminado correctamente");
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "No se pudo eliminar al cliente");
+            }
+            cargarTablaClientes();
+            limpiarCamposClientes();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error en el SQL: " + ex.getMessage());
+        }
+         
+    }//GEN-LAST:event_btnEliminarClienteActionPerformed
 
     /**
      * @param args the command line arguments
