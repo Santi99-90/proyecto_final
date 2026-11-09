@@ -4,12 +4,14 @@
  */
 package interfaz;
 
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Hplay
  */
 public class VentanaCajero extends javax.swing.JFrame {
-    
+    boolean mostrar_mensaje = false;
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(VentanaCajero.class.getName());
 
     /**
@@ -28,22 +30,406 @@ public class VentanaCajero extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel1 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        pantalla = new javax.swing.JTextArea();
+        panel_teclado = new javax.swing.JPanel();
+        B1 = new javax.swing.JButton();
+        B2 = new javax.swing.JButton();
+        B3 = new javax.swing.JButton();
+        B4 = new javax.swing.JButton();
+        B5 = new javax.swing.JButton();
+        B6 = new javax.swing.JButton();
+        B7 = new javax.swing.JButton();
+        B8 = new javax.swing.JButton();
+        B9 = new javax.swing.JButton();
+        Blimpiar = new javax.swing.JButton();
+        B0 = new javax.swing.JButton();
+        Bretroceder = new javax.swing.JButton();
+        Bretirar = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tabla_billetes = new javax.swing.JTable();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        txtCuentaDestino = new javax.swing.JTextField();
+        btnVolver = new javax.swing.JButton();
+        btnConsultar = new javax.swing.JButton();
+        btnConsignar = new javax.swing.JButton();
+        btnTransferir = new javax.swing.JButton();
+        btnCancelar = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        txtNumCajero = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        txtNumCuenta = new javax.swing.JTextField();
+        btnIngresar = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        lblCliente = new javax.swing.JLabel();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jLabel1.setText("CAJERO AUTOMATICO");
+
+        pantalla.setEditable(false);
+        pantalla.setColumns(20);
+        pantalla.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        pantalla.setLineWrap(true);
+        pantalla.setRows(5);
+        pantalla.setWrapStyleWord(true);
+        jScrollPane1.setViewportView(pantalla);
+
+        panel_teclado.setLayout(new java.awt.GridLayout(0, 3, 5, 8));
+
+        B1.setText("1");
+        B1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                B1ActionPerformed(evt);
+            }
+        });
+        panel_teclado.add(B1);
+
+        B2.setText("2");
+        B2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                B2ActionPerformed(evt);
+            }
+        });
+        panel_teclado.add(B2);
+
+        B3.setText("3");
+        B3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                B3ActionPerformed(evt);
+            }
+        });
+        panel_teclado.add(B3);
+
+        B4.setText("4");
+        B4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                B4ActionPerformed(evt);
+            }
+        });
+        panel_teclado.add(B4);
+
+        B5.setText("5");
+        B5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                B5ActionPerformed(evt);
+            }
+        });
+        panel_teclado.add(B5);
+
+        B6.setText("6");
+        B6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                B6ActionPerformed(evt);
+            }
+        });
+        panel_teclado.add(B6);
+
+        B7.setText("7");
+        B7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                B7ActionPerformed(evt);
+            }
+        });
+        panel_teclado.add(B7);
+
+        B8.setText("8");
+        B8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                B8ActionPerformed(evt);
+            }
+        });
+        panel_teclado.add(B8);
+
+        B9.setText("9");
+        B9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                B9ActionPerformed(evt);
+            }
+        });
+        panel_teclado.add(B9);
+
+        Blimpiar.setText("Limpiar");
+        Blimpiar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BlimpiarActionPerformed(evt);
+            }
+        });
+        panel_teclado.add(Blimpiar);
+
+        B0.setText("0");
+        B0.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                B0ActionPerformed(evt);
+            }
+        });
+        panel_teclado.add(B0);
+
+        Bretroceder.setText("<-");
+        Bretroceder.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BretrocederActionPerformed(evt);
+            }
+        });
+        panel_teclado.add(Bretroceder);
+
+        Bretirar.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        Bretirar.setText("Retirar");
+        Bretirar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BretirarActionPerformed(evt);
+            }
+        });
+
+        tabla_billetes.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        tabla_billetes.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Denominacion", "Billetes", "Dinero Total"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane2.setViewportView(tabla_billetes);
+
+        jLabel5.setText("Cuenta destino:");
+
+        jLabel6.setText("TRANSFERENCIA");
+
+        btnVolver.setText("Volver");
+
+        btnConsultar.setText("Consultar Saldo");
+
+        btnConsignar.setText("Consignar");
+
+        btnTransferir.setText("Transferir");
+
+        btnCancelar.setText("Cancelar");
+
+        jLabel2.setText("N cajero:");
+
+        jLabel3.setText("N cuenta:");
+
+        btnIngresar.setText("Ingresar");
+
+        jLabel4.setText("Cliente:");
+
+        lblCliente.setText("---");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(388, 388, 388)
+                        .addComponent(jLabel1))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(416, 416, 416)
+                        .addComponent(btnVolver)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(37, 37, 37)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(txtCuentaDestino, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.LEADING)))
+                .addGap(54, 54, 54)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtNumCajero, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(28, 28, 28)
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtNumCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(78, 78, 78)
+                                .addComponent(btnIngresar))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel4)
+                                .addGap(18, 18, 18)
+                                .addComponent(lblCliente)))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jScrollPane2)
+                            .addComponent(panel_teclado, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jScrollPane1)
+                            .addComponent(Bretirar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 531, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 75, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnConsultar)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(10, 10, 10)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(btnConsignar)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(btnTransferir)
+                                        .addComponent(btnCancelar)))))
+                        .addGap(69, 69, 69))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(22, 22, 22)
+                .addComponent(jLabel1)
+                .addGap(31, 31, 31)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(txtNumCajero, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3)
+                    .addComponent(txtNumCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnIngresar))
+                .addGap(32, 32, 32)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(lblCliente))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel6)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jLabel5)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtCuentaDestino, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(panel_teclado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnConsultar)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnConsignar)
+                        .addGap(28, 28, 28)
+                        .addComponent(btnTransferir)
+                        .addGap(33, 33, 33)
+                        .addComponent(btnCancelar)))
+                .addGap(18, 18, 18)
+                .addComponent(Bretirar)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(40, 40, 40)
+                .addComponent(btnVolver)
+                .addGap(24, 24, 24))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void B1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_B1ActionPerformed
+        // TODO add your handling code here:
+        agregar_digito("1");
+    }//GEN-LAST:event_B1ActionPerformed
+
+    private void B2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_B2ActionPerformed
+        // TODO add your handling code here:
+        agregar_digito("2");
+    }//GEN-LAST:event_B2ActionPerformed
+
+    private void B3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_B3ActionPerformed
+        // TODO add your handling code here:
+        agregar_digito("3");
+    }//GEN-LAST:event_B3ActionPerformed
+
+    private void B4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_B4ActionPerformed
+        // TODO add your handling code here:
+        agregar_digito("4");
+    }//GEN-LAST:event_B4ActionPerformed
+
+    private void B5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_B5ActionPerformed
+        // TODO add your handling code here:
+        agregar_digito("5");
+    }//GEN-LAST:event_B5ActionPerformed
+
+    private void B6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_B6ActionPerformed
+        // TODO add your handling code here:
+        agregar_digito("6");
+    }//GEN-LAST:event_B6ActionPerformed
+
+    private void B7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_B7ActionPerformed
+        // TODO add your handling code here:
+        agregar_digito("7");
+    }//GEN-LAST:event_B7ActionPerformed
+
+    private void B8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_B8ActionPerformed
+        // TODO add your handling code here:
+        agregar_digito("8");
+    }//GEN-LAST:event_B8ActionPerformed
+
+    private void B9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_B9ActionPerformed
+        // TODO add your handling code here:
+        agregar_digito("9");
+    }//GEN-LAST:event_B9ActionPerformed
+
+    private void BlimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BlimpiarActionPerformed
+        // TODO add your handling code here:
+        pantalla.setText("");
+        mostrar_mensaje = false;
+    }//GEN-LAST:event_BlimpiarActionPerformed
+
+    private void B0ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_B0ActionPerformed
+        // TODO add your handling code here:
+        agregar_digito("0");
+    }//GEN-LAST:event_B0ActionPerformed
+
+    private void BretrocederActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BretrocederActionPerformed
+        // TODO add your handling code here:
+        if (mostrar_mensaje == true) {
+            pantalla.setText("");
+            mostrar_mensaje = false;
+        }
+        String texto = pantalla.getText();
+        if (texto.length() > 0) {
+            String backspace = texto.substring(0, texto.length() - 1);
+            pantalla.setText(backspace);
+        }
+    }//GEN-LAST:event_BretrocederActionPerformed
+
+    private void BretirarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BretirarActionPerformed
+        // TODO add your handling code here:
+
+    }//GEN-LAST:event_BretirarActionPerformed
+
+    private void agregar_digito(String digito){
+        if (mostrar_mensaje == true) {
+            pantalla.setText("");
+            mostrar_mensaje = false;
+        }
+        
+        if (pantalla.getText().length() >= 7) {
+            
+        }
+        else{
+            pantalla.append(digito);
+        }
+    }
+    
+    private void actualizar_tabla(){
+        
+    }    
     /**
      * @param args the command line arguments
      */
@@ -70,5 +456,39 @@ public class VentanaCajero extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton B0;
+    private javax.swing.JButton B1;
+    private javax.swing.JButton B2;
+    private javax.swing.JButton B3;
+    private javax.swing.JButton B4;
+    private javax.swing.JButton B5;
+    private javax.swing.JButton B6;
+    private javax.swing.JButton B7;
+    private javax.swing.JButton B8;
+    private javax.swing.JButton B9;
+    private javax.swing.JButton Blimpiar;
+    private javax.swing.JButton Bretirar;
+    private javax.swing.JButton Bretroceder;
+    private javax.swing.JButton btnCancelar;
+    private javax.swing.JButton btnConsignar;
+    private javax.swing.JButton btnConsultar;
+    private javax.swing.JButton btnIngresar;
+    private javax.swing.JButton btnTransferir;
+    private javax.swing.JButton btnVolver;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JLabel lblCliente;
+    private javax.swing.JPanel panel_teclado;
+    private javax.swing.JTextArea pantalla;
+    private javax.swing.JTable tabla_billetes;
+    private javax.swing.JTextField txtCuentaDestino;
+    private javax.swing.JTextField txtNumCajero;
+    private javax.swing.JTextField txtNumCuenta;
     // End of variables declaration//GEN-END:variables
 }
