@@ -9,12 +9,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import dao.CajeroDAO;
+import modelo.Cajero;
 /**
  *
  * @author Hplay
  */
 public class VentanaAdministracion extends javax.swing.JFrame {
     private ClienteDAO clienteDAO = new ClienteDAO();
+    private CajeroDAO cajeroDAO = new CajeroDAO();
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(VentanaAdministracion.class.getName());
 
     /**
@@ -24,6 +27,7 @@ public class VentanaAdministracion extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
         cargarTablaClientes();
+        cargarTablaCajeros();
     }
     
     private void mostrarClientes(ArrayList<Cliente> lista){
@@ -52,6 +56,41 @@ public class VentanaAdministracion extends javax.swing.JFrame {
         txtSaldo.setText("");
         txtMonto.setText("");
         tablaClientes.clearSelection();
+    }
+    
+    private void mostrarCajeros(ArrayList<Cajero> lista) {
+        DefaultTableModel modelo = (DefaultTableModel) tablaCajeros.getModel();
+        modelo.setRowCount(0);
+        for (Cajero c : lista) {
+            String estado;
+            if (c.getEstado() == 0) {
+                estado = "Disponible";
+            }
+            else{
+                estado = "Ocupado";
+            }
+            modelo.addRow(new Object[]{c.getId(), c.getNdiez(), c.getNveinte(),
+                    c.getNcincuenta(), c.getNcien(), estado});
+        }
+    }
+    
+    private void cargarTablaCajeros(){
+        try {
+            mostrarCajeros(cajeroDAO.listar());
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error al cargar los cajeros: " + ex.getMessage());
+        }
+    }
+    
+    private void limpiarCamposCajeros(){
+    txtIdCajero.setText("");
+    txtDiez.setText("");
+    txtVeinte.setText("");
+    txtCincuenta.setText("");
+    txtCien.setText("");
+    txtCantidadBilletes.setText("");
+    cbDenominacion.setSelectedIndex(0);
+    tablaCajeros.clearSelection();
     }
     
     
@@ -400,15 +439,20 @@ public class VentanaAdministracion extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Id", "10.000", "20.000", "50.000", "100.000", "Total", "Estado"
+                "Id", "10.000", "20.000", "50.000", "100.000", "Estado"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false
+                false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
+            }
+        });
+        tablaCajeros.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaCajerosMouseClicked(evt);
             }
         });
         jScrollPane2.setViewportView(tablaCajeros);
@@ -426,12 +470,32 @@ public class VentanaAdministracion extends javax.swing.JFrame {
         jLabel17.setText("Billetes 100.000:");
 
         btnAgregarCajero.setText("Agregar");
+        btnAgregarCajero.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAgregarCajeroActionPerformed(evt);
+            }
+        });
 
         btnEditarCajero.setText("Editar");
+        btnEditarCajero.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarCajeroActionPerformed(evt);
+            }
+        });
 
         btnEliminarCajero.setText("Eliminar");
+        btnEliminarCajero.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarCajeroActionPerformed(evt);
+            }
+        });
 
         btnLimpiarCajero.setText("Limpiar");
+        btnLimpiarCajero.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLimpiarCajeroActionPerformed(evt);
+            }
+        });
 
         jLabel18.setText("DATOS DEL CAJERO");
 
@@ -1036,6 +1100,189 @@ public class VentanaAdministracion extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Error en el SQL: " + ex.getMessage());            
         }        
     }//GEN-LAST:event_btnRetirarActionPerformed
+
+    private void tablaCajerosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaCajerosMouseClicked
+        // TODO add your handling code here:
+        int fila = tablaCajeros.getSelectedRow();
+        if (fila == -1) {
+            return;
+        }
+        
+        txtIdCajero.setText(tablaCajeros.getValueAt(fila, 0).toString());
+        txtDiez.setText(tablaCajeros.getValueAt(fila, 1).toString());
+        txtVeinte.setText(tablaCajeros.getValueAt(fila, 2).toString());
+        txtCincuenta.setText(tablaCajeros.getValueAt(fila, 3).toString());
+        txtCien.setText(tablaCajeros.getValueAt(fila, 4).toString());
+    }//GEN-LAST:event_tablaCajerosMouseClicked
+
+    private void btnLimpiarCajeroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarCajeroActionPerformed
+        // TODO add your handling code here:
+        limpiarCamposCajeros();
+    }//GEN-LAST:event_btnLimpiarCajeroActionPerformed
+
+    private void btnAgregarCajeroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarCajeroActionPerformed
+        // TODO add your handling code here:
+        if (!txtIdCajero.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ese cajero existe, por favor oprima en Limpiar para agregar un nuevo cajero");
+            return;
+        }
+        if (txtDiez.getText().trim().isEmpty() || txtVeinte.getText().trim().isEmpty()|| txtCincuenta.getText().trim().isEmpty() || txtCien.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor rellene todos los campos");
+            return;
+        }
+        
+        int diez;
+        int veinte;
+        int cincuenta;
+        int cien;
+        try {
+            diez = Integer.parseInt(txtDiez.getText().trim());
+            veinte = Integer.parseInt(txtVeinte.getText().trim());
+            cincuenta = Integer.parseInt(txtCincuenta.getText().trim());
+            cien = Integer.parseInt(txtCien.getText().trim());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Las cantidades de billetes deben ser numeros enteros");
+            return;
+        }
+        if (diez < 0 || veinte < 0 || cincuenta < 0 || cien < 0) {
+            JOptionPane.showMessageDialog(this, "las cantidades de billetes no pueden ser menor que 0");
+            return;
+        }
+        
+        try {
+            Cajero nuevo = new Cajero();
+            nuevo.setNdiez(diez);
+            nuevo.setNveinte(veinte);
+            nuevo.setNcincuenta(cincuenta);
+            nuevo.setNcien(cien);
+            if (cajeroDAO.agregar(nuevo)) {
+                JOptionPane.showMessageDialog(this, "Cajero agregado correctamente");
+                cargarTablaCajeros();
+                limpiarCamposCajeros();
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "el Cajero no se pudo ingresar correctamente");
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error en el SQL: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_btnAgregarCajeroActionPerformed
+
+    private void btnEditarCajeroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarCajeroActionPerformed
+        // TODO add your handling code here:
+        if (txtIdCajero.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor seleccione un cajero de la tabla");
+            return;
+        }
+        int id = Integer.parseInt(txtIdCajero.getText());
+        
+        if (txtDiez.getText().trim().isEmpty() || txtVeinte.getText().trim().isEmpty()|| txtCincuenta.getText().trim().isEmpty() || txtCien.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor rellene todos los campos");
+            return;
+        }
+        int diez;
+        int veinte;
+        int cincuenta;
+        int cien;
+        try {
+            diez = Integer.parseInt(txtDiez.getText().trim());
+            veinte = Integer.parseInt(txtVeinte.getText().trim());
+            cincuenta = Integer.parseInt(txtCincuenta.getText().trim());
+            cien = Integer.parseInt(txtCien.getText().trim());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Las cantidades de billetes deben ser numeros enteros");
+            return;
+        }
+        if (diez < 0 || veinte < 0 || cincuenta < 0 || cien < 0) {
+            JOptionPane.showMessageDialog(this, "las cantidades de billetes no pueden ser menor que 0");
+            return;
+        }
+        
+        try {
+            Cajero actual = cajeroDAO.buscarPorId(id);
+            if (actual == null) {
+                JOptionPane.showMessageDialog(this, "El cajero no existe");
+                cargarTablaCajeros();
+                limpiarCamposCajeros();
+                return;
+            }
+            if (actual.getEstado()==1) {
+                JOptionPane.showMessageDialog(this, "El cajero se encuentra ocupado en una operacion");
+                return;
+            }
+            boolean editado;
+            cajeroDAO.cambiarEstado(id, 1);
+            try {
+                Cajero c = new Cajero();
+                c.setId(id);
+                c.setNdiez(diez);
+                c.setNveinte(veinte);
+                c.setNcincuenta(cincuenta);
+                c.setNcien(cien);  
+                editado = cajeroDAO.actualizarBilletes(c);
+            } finally {
+                cajeroDAO.cambiarEstado(id, 0);
+            }
+            if (editado) {
+                JOptionPane.showMessageDialog(this, "Cajero editado correctamente");
+                cargarTablaCajeros();
+                limpiarCamposCajeros();
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "Cajero no editado correctamente");
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error en el SQL: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_btnEditarCajeroActionPerformed
+
+    private void btnEliminarCajeroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarCajeroActionPerformed
+        // TODO add your handling code here:
+        if (txtIdCajero.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor seleccione un cajero de la tabla");
+            return;
+        }
+        int id = Integer.parseInt(txtIdCajero.getText());
+        String mensaje = "Seguro que desea eliminar el cajero de id " + id + " ?";
+        if (!txtDiez.getText().equals("0") || !txtVeinte.getText().equals("0") || !txtCincuenta.getText().equals("0") || !txtCien.getText().equals("0")) {
+           mensaje += "\neste cajero todavía tiene billetes";
+        }
+        int opcion = JOptionPane.showConfirmDialog(this, mensaje, "Confirmar", JOptionPane.YES_NO_OPTION);
+        if (opcion != JOptionPane.YES_OPTION) {
+            return;
+        }
+        
+        try {
+            Cajero actual = cajeroDAO.buscarPorId(id);
+            if (actual == null) {
+                JOptionPane.showMessageDialog(this, "El cajero no existe");
+                cargarTablaCajeros();
+                limpiarCamposCajeros();
+                return;
+            }
+            if (actual.getEstado()==1) {
+                JOptionPane.showMessageDialog(this, "El cajero se encuentra ocupado en una operacion");
+                return;
+            }
+            boolean eliminado;
+            cajeroDAO.cambiarEstado(id, 1);
+            try {
+                eliminado = cajeroDAO.eliminar(id);
+            } finally {
+                cajeroDAO.cambiarEstado(id, 0);
+            }
+            if (eliminado) {
+                JOptionPane.showMessageDialog(this, "El cajero ha sido eliminado correctamente");
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "El cajero no se pudo eliminar");
+            }
+            cargarTablaCajeros();
+            limpiarCamposCajeros();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error en el SQL: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_btnEliminarCajeroActionPerformed
 
     /**
      * @param args the command line arguments
