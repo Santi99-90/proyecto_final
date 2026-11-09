@@ -93,6 +93,17 @@ public class VentanaAdministracion extends javax.swing.JFrame {
     tablaCajeros.clearSelection();
     }
     
+    private void actualizarEstadisticas(){
+        try {
+            int total = clienteDAO.contarClientes();
+            Double promedio = clienteDAO.promedioSaldo();
+            lblNumClientes.setText(String.valueOf(total));
+            lblPromedio.setText(String.format("%.2f", promedio));
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error al cargar las estadisticas: " + ex.getMessage());
+        }
+    }
+    
     
 
     /**
@@ -650,6 +661,11 @@ public class VentanaAdministracion extends javax.swing.JFrame {
         jLabel22.setText("ESTADISTICAS DEL BANCO");
 
         btnActualizarEstadisticas.setText("Actualizar");
+        btnActualizarEstadisticas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnActualizarEstadisticasActionPerformed(evt);
+            }
+        });
 
         jLabel23.setText("Numero de Clientes:");
 
@@ -701,6 +717,11 @@ public class VentanaAdministracion extends javax.swing.JFrame {
         tabsAdmin.addTab("Estadisticas", jEstadisticas);
 
         btnVolver.setText("Volver");
+        btnVolver.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnVolverActionPerformed(evt);
+            }
+        });
 
         lblTitulo.setText("ADMINISTRACION DEL BANCO");
 
@@ -1441,6 +1462,18 @@ public class VentanaAdministracion extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Error en el SQL: " + ex.getMessage());
         }
     }//GEN-LAST:event_btnQuitarBilletesActionPerformed
+
+    private void btnActualizarEstadisticasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarEstadisticasActionPerformed
+        // TODO add your handling code here:
+        actualizarEstadisticas();
+    }//GEN-LAST:event_btnActualizarEstadisticasActionPerformed
+
+    private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
+        // TODO add your handling code here:
+        VentanaInicio ventanadeinicio = new VentanaInicio();
+        ventanadeinicio.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnVolverActionPerformed
 
     /**
      * @param args the command line arguments
