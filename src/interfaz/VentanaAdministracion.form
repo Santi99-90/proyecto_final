@@ -826,11 +826,17 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="Agregar Billetes"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAgregarBilletesActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JButton" name="btnQuitarBilletes">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Quitar Billetes"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnQuitarBilletesActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel21">
               <Properties>

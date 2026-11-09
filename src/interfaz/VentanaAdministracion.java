@@ -506,8 +506,18 @@ public class VentanaAdministracion extends javax.swing.JFrame {
         jLabel20.setText("Cantidad:");
 
         btnAgregarBilletes.setText("Agregar Billetes");
+        btnAgregarBilletes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAgregarBilletesActionPerformed(evt);
+            }
+        });
 
         btnQuitarBilletes.setText("Quitar Billetes");
+        btnQuitarBilletes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnQuitarBilletesActionPerformed(evt);
+            }
+        });
 
         jLabel21.setText("BILLETES");
 
@@ -1283,6 +1293,154 @@ public class VentanaAdministracion extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Error en el SQL: " + ex.getMessage());
         }
     }//GEN-LAST:event_btnEliminarCajeroActionPerformed
+
+    private void btnAgregarBilletesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarBilletesActionPerformed
+        // TODO add your handling code here:
+        if (txtIdCajero.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor seleccione un cajero de la tabla");
+            return;
+        }
+        int id = Integer.parseInt(txtIdCajero.getText());
+        int denominacion = Integer.parseInt(cbDenominacion.getSelectedItem().toString());
+        int cantidad;
+        try {
+            cantidad = Integer.parseInt(txtCantidadBilletes.getText().trim());
+            
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "La cantidad dedbe ser numero entero");
+            return;
+        }
+        if (cantidad <= 0) {
+            JOptionPane.showMessageDialog(this, "la cantidad debe ser mayor que 0");
+            return;
+        }
+        try {
+            Cajero actual = cajeroDAO.buscarPorId(id);
+            if (actual == null) {
+                JOptionPane.showMessageDialog(this, "El cajero no existe");
+                cargarTablaCajeros();
+                limpiarCamposCajeros();
+                return;
+            }
+            if (actual.getEstado()==1) {
+                JOptionPane.showMessageDialog(this, "El cajero se encuentra ocupado en una operacion");
+                return;
+            }
+            boolean agregado;
+            cajeroDAO.cambiarEstado(id, 1);
+            try {
+                Cajero c = cajeroDAO.buscarPorId(id);
+                if (denominacion == 10000) {
+                    c.setNdiez(c.getNdiez() + cantidad);
+                }
+                else if (denominacion == 20000) {
+                    c.setNveinte(c.getNveinte() + cantidad);
+                }
+                else if (denominacion == 50000) {
+                    c.setNcincuenta(c.getNcincuenta() + cantidad);
+                }
+                else{
+                    c.setNcien(c.getNcien() + cantidad);
+                }
+                agregado = cajeroDAO.actualizarBilletes(c);
+            } finally {
+                cajeroDAO.cambiarEstado(id, 0);
+            }
+            
+            if (agregado) {
+                JOptionPane.showMessageDialog(this, "Se agregaron " + cantidad + " billetes de " + denominacion);
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "No se pudo agregar billetes a ese cajero");
+            }
+            cargarTablaCajeros();
+            limpiarCamposCajeros();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error en el SQL: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_btnAgregarBilletesActionPerformed
+
+    private void btnQuitarBilletesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnQuitarBilletesActionPerformed
+        // TODO add your handling code here:
+        if (txtIdCajero.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor seleccione un cajero de la tabla");
+            return;
+        }
+        int id = Integer.parseInt(txtIdCajero.getText());
+        int denominacion = Integer.parseInt(cbDenominacion.getSelectedItem().toString());
+        int cantidad;
+        try {
+            cantidad = Integer.parseInt(txtCantidadBilletes.getText().trim());
+            
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "La cantidad debe ser numero entero");
+            return;
+        }
+        if (cantidad <= 0) {
+            JOptionPane.showMessageDialog(this, "la cantidad debe ser mayor que 0");
+            return;
+        }
+        try {
+            Cajero actual = cajeroDAO.buscarPorId(id);
+            if (actual == null) {
+                JOptionPane.showMessageDialog(this, "El cajero no existe");
+                cargarTablaCajeros();
+                limpiarCamposCajeros();
+                return;
+            }
+            if (actual.getEstado()==1) {
+                JOptionPane.showMessageDialog(this, "El cajero se encuentra ocupado en una operacion");
+                return;
+            }
+            cajeroDAO.cambiarEstado(id, 1);
+            try {
+                Cajero c = cajeroDAO.buscarPorId(id);
+                int disponibles;
+                if (denominacion == 10000) {
+                    disponibles = c.getNdiez();
+                }
+                else if (denominacion == 20000) {
+                    disponibles = c.getNveinte();
+                }
+                else if (denominacion == 50000) {
+                    disponibles = c.getNcincuenta();
+                }
+                else{
+                    disponibles = c.getNcien();
+                }
+                if (cantidad > disponibles) {
+                    JOptionPane.showMessageDialog(this, "No se pueden quitar " + cantidad + " billetes de " + denominacion+ ". Solo hay " + disponibles);
+                }
+                else{
+                    int quedan = disponibles - cantidad;
+                    if (denominacion == 10000) {
+                        c.setNdiez(quedan);
+                    }
+                    else if (denominacion == 20000) {
+                        c.setNveinte(quedan);
+                    }
+                    else if (denominacion == 50000) {
+                        c.setNcincuenta(quedan);
+                    }
+                    else{
+                        c.setNcien(quedan);
+                    }
+                    if (cajeroDAO.actualizarBilletes(c)) {
+                        JOptionPane.showMessageDialog(this, "Se quitaron " + cantidad + " billetes de " + denominacion + ". Quedan " + quedan);
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(this, "No se pudo retirar billetes del cajero");
+                    }
+                }
+            } finally {
+                cajeroDAO.cambiarEstado(id, 0);
+            }
+            cargarTablaCajeros();
+            limpiarCamposCajeros();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error en el SQL: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_btnQuitarBilletesActionPerformed
 
     /**
      * @param args the command line arguments
