@@ -183,16 +183,41 @@ public class VentanaAdministracion extends javax.swing.JFrame {
         jLabel8.setText("Buscar:");
 
         btnBuscarNombre.setText("Por nombre");
+        btnBuscarNombre.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarNombreActionPerformed(evt);
+            }
+        });
 
         btnBuscarId.setText("Por Id");
+        btnBuscarId.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarIdActionPerformed(evt);
+            }
+        });
 
         btnMostrarTodos.setText("Mostrar Todos");
+        btnMostrarTodos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMostrarTodosActionPerformed(evt);
+            }
+        });
 
         jLabel9.setText("Monto:");
 
         btnConsignar.setText("Consignar");
+        btnConsignar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConsignarActionPerformed(evt);
+            }
+        });
 
         btnRetirar.setText("Retirar");
+        btnRetirar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRetirarActionPerformed(evt);
+            }
+        });
 
         jLabel10.setText("DATOS DEL CLIENTE");
 
@@ -832,6 +857,185 @@ public class VentanaAdministracion extends javax.swing.JFrame {
         }
          
     }//GEN-LAST:event_btnEliminarClienteActionPerformed
+
+    private void btnBuscarNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarNombreActionPerformed
+        // TODO add your handling code here:
+        String texto = txtBuscar.getText().trim();
+        if (texto.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor escriba un nombre para buscar");
+            return;
+        }
+        
+        try {
+            ArrayList<Cliente> lista= clienteDAO.buscarPorNombre(texto);
+            if (lista.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "No se pudo encontrar el/los cliente/s con ese nombre");
+                return;
+            }
+            mostrarClientes(lista);
+            limpiarCamposClientes();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error en el SQL: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_btnBuscarNombreActionPerformed
+
+    private void btnBuscarIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarIdActionPerformed
+        // TODO add your handling code here:
+        String texto = txtBuscar.getText().trim();
+        if (texto.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor escriba un id para buscar");
+            return;
+        }
+        
+        int id;
+        try {
+            id = Integer.parseInt(texto);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "el id debe ser un numero");
+            return;
+        }
+        
+        try {
+            Cliente c = clienteDAO.buscarPorId(id);
+            if (c == null) {
+                JOptionPane.showMessageDialog(this, "No existe un cliente de id " + id);
+                return;
+            }
+            ArrayList<Cliente> lista = new ArrayList<>();
+            lista.add(c);
+            mostrarClientes(lista);
+            limpiarCamposClientes();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error en el SQL: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_btnBuscarIdActionPerformed
+
+    private void btnMostrarTodosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMostrarTodosActionPerformed
+        // TODO add your handling code here:
+        txtBuscar.setText("");
+        cargarTablaClientes();
+    }//GEN-LAST:event_btnMostrarTodosActionPerformed
+
+    private void btnConsignarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsignarActionPerformed
+        // TODO add your handling code here:
+        if (txtIdCliente.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Seleccione un cliente en la tabla");
+            return;
+        }
+        int id = Integer.parseInt(txtIdCliente.getText());
+        double monto;
+        try {
+            monto = Double.parseDouble(txtMonto.getText().trim());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "el monto debe ser un numero");
+            return;
+        }
+        if (monto <=  0) {
+            JOptionPane.showMessageDialog(this, "el monto debe ser mayor que 0");
+            return;
+        }
+        try {
+            Cliente actual = clienteDAO.buscarPorId(id);
+            if (actual == null) {
+                JOptionPane.showMessageDialog(this, "El cliente no existe");
+                cargarTablaClientes();
+                limpiarCamposClientes();
+                return;
+            }
+            if (actual.getEstado() == 1) {
+                JOptionPane.showMessageDialog(this, "el cliente esta ocupado en otra operacion");
+                return;
+            }
+            
+            double nuevoSaldo;
+            boolean consignar;
+            clienteDAO.cambiarEstado(id, 1);
+            try {
+                Cliente saldoActual = clienteDAO.buscarPorId(id);
+                nuevoSaldo = saldoActual.getSaldo() + monto;
+                consignar = clienteDAO.actualizarSaldo(id, nuevoSaldo);
+                
+            } finally {
+                clienteDAO.cambiarEstado(id, 0);
+            }
+            if (consignar) {
+                JOptionPane.showMessageDialog(this, "Consignacion Exitosa de " + monto + "\nNuevo saldo: " + nuevoSaldo);
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "No se pudo realizar la consignacion");
+            }
+            cargarTablaClientes();
+            limpiarCamposClientes();
+            
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error en el SQL: " + ex.getMessage());            
+        }
+                
+    }//GEN-LAST:event_btnConsignarActionPerformed
+
+    private void btnRetirarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRetirarActionPerformed
+        // TODO add your handling code here:
+        if (txtIdCliente.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Seleccione un cliente en la tabla");
+            return;
+        }
+        int id = Integer.parseInt(txtIdCliente.getText());
+        double monto;
+        try {
+            monto = Double.parseDouble(txtMonto.getText().trim());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "el monto debe ser un numero");
+            return;
+        }
+        if (monto <=  0) {
+            JOptionPane.showMessageDialog(this, "el monto debe ser mayor que 0");
+            return;
+        }
+        
+        try {
+            Cliente actual = clienteDAO.buscarPorId(id);
+            if (actual == null) {
+                JOptionPane.showMessageDialog(this, "El cliente no existe");
+                cargarTablaClientes();
+                limpiarCamposClientes();
+                return;
+            }
+            if (actual.getEstado() == 1) {
+                JOptionPane.showMessageDialog(this, "el cliente esta ocupado en otra operacion");
+                return;
+            }
+            
+            
+            double nuevoSaldo;
+            //boolean consignar;
+            clienteDAO.cambiarEstado(id, 1);
+            try {
+                Cliente SaldoActual = clienteDAO.buscarPorId(id);
+                if (SaldoActual.getSaldo() < monto) {
+                    JOptionPane.showMessageDialog(this, "Saldo insuficiente, el cliente tiene: " + SaldoActual.getSaldo());
+                    return;
+                }
+                else{
+                    nuevoSaldo = SaldoActual.getSaldo() - monto;
+                    if (clienteDAO.actualizarSaldo(id, nuevoSaldo)) {
+                        JOptionPane.showMessageDialog(this, "Retiro exitoso de: " + monto + "\nNuevo saldo: " + nuevoSaldo);
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(this, "No se pudo realizar el retiro");
+                    }
+                }
+                
+            } finally {
+                clienteDAO.cambiarEstado(id, 0);
+            }
+            
+            cargarTablaClientes();
+            limpiarCamposClientes();
+            
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error en el SQL: " + ex.getMessage());            
+        }        
+    }//GEN-LAST:event_btnRetirarActionPerformed
 
     /**
      * @param args the command line arguments

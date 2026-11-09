@@ -352,16 +352,25 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="Por nombre"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnBuscarNombreActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JButton" name="btnBuscarId">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Por Id"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnBuscarIdActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JButton" name="btnMostrarTodos">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Mostrar Todos"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnMostrarTodosActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel9">
               <Properties>
@@ -374,11 +383,17 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="Consignar"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnConsignarActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JButton" name="btnRetirar">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Retirar"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnRetirarActionPerformed"/>
+              </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel10">
               <Properties>
