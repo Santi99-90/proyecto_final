@@ -5,13 +5,22 @@
 package interfaz;
 
 import javax.swing.table.DefaultTableModel;
-
+import dao.ClienteDAO;
+import dao.CajeroDAO;
+import modelo.Cliente;
+import modelo.Cajero;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
 /**
  *
  * @author Hplay
  */
 public class VentanaCajero extends javax.swing.JFrame {
     boolean mostrar_mensaje = false;
+    private ClienteDAO clienteDAO = new ClienteDAO();
+    private CajeroDAO cajeroDAO = new CajeroDAO();
+    private Cliente clienteActual = null;
+    private Cajero cajeroActual = null;
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(VentanaCajero.class.getName());
 
     /**
@@ -19,6 +28,28 @@ public class VentanaCajero extends javax.swing.JFrame {
      */
     public VentanaCajero() {
         initComponents();
+    }
+    
+    private void liberar(){
+        if (clienteActual != null) {
+            try {
+                clienteDAO.cambiarEstado(clienteActual.getId(), 0);
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this, "Error al liberar el cliente: " + e.getMessage());
+            }
+        }
+        if (cajeroActual != null) {
+            try {
+                cajeroDAO.cambiarEstado(cajeroActual.getId(), 0);
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this, "Error al liberar el cajero: " + e.getMessage());
+            }
+        }
+        clienteActual = null;
+        cajeroActual = null;
+        lblCliente.setText("---");
+        txtNumCajero.setEditable(true);
+        txtNumCuenta.setEditable(true);
     }
 
     /**
@@ -222,12 +253,22 @@ public class VentanaCajero extends javax.swing.JFrame {
         btnTransferir.setText("Transferir");
 
         btnCancelar.setText("Cancelar");
+        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelarActionPerformed(evt);
+            }
+        });
 
         jLabel2.setText("N cajero:");
 
         jLabel3.setText("N cuenta:");
 
         btnIngresar.setText("Ingresar");
+        btnIngresar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnIngresarActionPerformed(evt);
+            }
+        });
 
         jLabel4.setText("Cliente:");
 
@@ -412,6 +453,75 @@ public class VentanaCajero extends javax.swing.JFrame {
         // TODO add your handling code here:
 
     }//GEN-LAST:event_BretirarActionPerformed
+
+    private void btnIngresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIngresarActionPerformed
+        // TODO add your handling code here:
+        if (clienteActual != null) {
+            JOptionPane.showMessageDialog(this, "Ya hay una operación en curso. Termínela o presione Cancelar.");
+            return;
+        }
+        
+        int numCajero;
+        int numCuenta;
+        try {
+            numCajero = Integer.parseInt(txtNumCajero.getText().trim());
+            numCuenta = Integer.parseInt(txtNumCuenta.getText().trim());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Escriba un número de cajero y un número de cuenta válidos.");
+            return;
+        }
+        
+        try {
+            Cajero cajero = cajeroDAO.buscarPorId(numCajero);
+            if (cajero == null) {
+                JOptionPane.showMessageDialog(this, "El cajero " + numCajero + " no existe.");
+                return;
+            }
+            if (cajero.getEstado() == 1) {
+                JOptionPane.showMessageDialog(this, "El cajero esta ocupado. Intente mas tarde");
+                return;
+            }
+            
+            Cliente cliente = clienteDAO.buscarPorCuenta(numCuenta);
+            if (cliente == null) {
+                JOptionPane.showMessageDialog(this, "La cuenta " + numCuenta + " no existe.");
+                return;
+            }
+            if (cliente.getEstado() == 1) {
+                JOptionPane.showMessageDialog(this, "El cliente esta ocupado. Intente mas tarde");
+                return;
+            }
+            
+            cajeroDAO.cambiarEstado(cajero.getId(), 1);
+            cajeroActual = cajero;
+            clienteDAO.cambiarEstado(cliente.getId(), 1);
+            clienteActual = cliente;
+            
+            lblCliente.setText(cliente.getNombre() + " " + cliente.getApellido());
+            txtNumCajero.setEditable(false);
+            txtNumCuenta.setEditable(false);
+            pantalla.setText("Bienvenido(a). Escriba el monto y elija una operación.");
+            mostrar_mensaje = true;
+                
+        } catch (SQLException ex) {
+            liberar();
+            JOptionPane.showMessageDialog(this, "Error en el sql: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_btnIngresarActionPerformed
+
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
+        // TODO add your handling code here:
+        if (clienteActual == null) {
+            JOptionPane.showMessageDialog(this, "No hay ninguna operación en curso.");
+            return;
+        }
+        liberar();
+        txtNumCuenta.setText("");
+        txtCuentaDestino.setText("");
+        ((DefaultTableModel) tabla_billetes.getModel()).setRowCount(0);
+        pantalla.setText("Operacion cancelada");
+        mostrar_mensaje = true;
+    }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void agregar_digito(String digito){
         if (mostrar_mensaje == true) {
