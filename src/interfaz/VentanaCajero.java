@@ -247,6 +247,11 @@ public class VentanaCajero extends javax.swing.JFrame {
         btnVolver.setText("Volver");
 
         btnConsultar.setText("Consultar Saldo");
+        btnConsultar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConsultarActionPerformed(evt);
+            }
+        });
 
         btnConsignar.setText("Consignar");
 
@@ -522,6 +527,27 @@ public class VentanaCajero extends javax.swing.JFrame {
         pantalla.setText("Operacion cancelada");
         mostrar_mensaje = true;
     }//GEN-LAST:event_btnCancelarActionPerformed
+
+    private void btnConsultarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultarActionPerformed
+        // TODO add your handling code here:
+        if (clienteActual == null) {
+            JOptionPane.showMessageDialog(this, "Primero ingrese el número de cajero y de cuenta.");
+            return;
+        }
+        
+        String mensaje;
+        try {
+            Cliente c = clienteDAO.buscarPorId(clienteActual.getId());
+            mensaje = "Cliente: " + c.getNombre() + " " + c.getApellido() + "\nSaldo disponible: " + String.format("%,.2f", c.getSaldo());
+        } catch (SQLException ex) {
+            mensaje = "Error al consultar el saldo: " + ex.getMessage();
+        } finally {
+            liberar();
+        }
+        txtNumCuenta.setText("");
+        pantalla.setText(mensaje);
+        mostrar_mensaje = true;
+    }//GEN-LAST:event_btnConsultarActionPerformed
 
     private void agregar_digito(String digito){
         if (mostrar_mensaje == true) {
