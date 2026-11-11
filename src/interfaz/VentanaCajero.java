@@ -11,6 +11,7 @@ import modelo.Cliente;
 import modelo.Cajero;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
+import logica.Dispensador;
 /**
  *
  * @author Hplay
@@ -51,6 +52,8 @@ public class VentanaCajero extends javax.swing.JFrame {
         txtNumCajero.setEditable(true);
         txtNumCuenta.setEditable(true);
     }
+    
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -245,6 +248,11 @@ public class VentanaCajero extends javax.swing.JFrame {
         jLabel6.setText("TRANSFERENCIA");
 
         btnVolver.setText("Volver");
+        btnVolver.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnVolverActionPerformed(evt);
+            }
+        });
 
         btnConsultar.setText("Consultar Saldo");
         btnConsultar.addActionListener(new java.awt.event.ActionListener() {
@@ -254,6 +262,11 @@ public class VentanaCajero extends javax.swing.JFrame {
         });
 
         btnConsignar.setText("Consignar");
+        btnConsignar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConsignarActionPerformed(evt);
+            }
+        });
 
         btnTransferir.setText("Transferir");
 
@@ -548,6 +561,59 @@ public class VentanaCajero extends javax.swing.JFrame {
         pantalla.setText(mensaje);
         mostrar_mensaje = true;
     }//GEN-LAST:event_btnConsultarActionPerformed
+
+    private void btnConsignarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsignarActionPerformed
+        // TODO add your handling code here:
+        if (clienteActual == null) {
+            JOptionPane.showMessageDialog(this, "Primero ingrese el número de cajero y de cuenta.");
+            return;
+        }
+        
+        String texto = pantalla.getText().trim();
+        if (texto.isEmpty() || mostrar_mensaje == true) {
+            pantalla.setText("Escriba un monto por favor");
+            mostrar_mensaje = true;
+            return;
+        }
+        
+        int monto = Integer.parseInt(texto);
+        if (monto <= 0 || monto % 10000 != 0) {
+            pantalla.setText("Error: el monto a consignar debe ser multiplo de 10 y mayor que 0");
+            mostrar_mensaje = true;
+            return;
+        }
+        
+        String mensaje;
+        try {
+            Cliente c = clienteDAO.buscarPorId(clienteActual.getId());
+            double nuevoSaldo = c.getSaldo() + monto;
+            if (clienteDAO.actualizarSaldo(c.getId(), nuevoSaldo)) {
+                mensaje = "Consignación exitosa de: " + String.format("%,d", monto)+ "\nNuevo saldo: " + String.format("%,.2f", nuevoSaldo);
+            }
+            else{
+                mensaje = "No se pudo realizar la consignacion";
+            }
+        } catch (SQLException ex) {
+            mensaje = "Error en el SQL: " + ex.getMessage();
+        } finally {
+            liberar();
+        }
+        
+        txtNumCuenta.setText("");
+        pantalla.setText(mensaje);
+        mostrar_mensaje = true;
+    }//GEN-LAST:event_btnConsignarActionPerformed
+
+    private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
+        // TODO add your handling code here:
+        if (clienteActual != null) {
+            liberar();
+        }
+        
+        VentanaInicio inicio = new VentanaInicio();
+        inicio.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnVolverActionPerformed
 
     private void agregar_digito(String digito){
         if (mostrar_mensaje == true) {
