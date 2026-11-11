@@ -53,7 +53,16 @@ public class VentanaCajero extends javax.swing.JFrame {
         txtNumCuenta.setEditable(true);
     }
     
-    
+    private void mostrarBilletesEntregados(int [] distribucion){
+        DefaultTableModel modelo = (DefaultTableModel) tabla_billetes.getModel();
+        modelo.setRowCount(0);
+        for (int i = 0; i < distribucion.length; i++) {
+            if (distribucion[i] > 0) {
+                int denominacion = Dispensador.denominaciones[i];
+                modelo.addRow(new Object[]{denominacion, distribucion[i], denominacion*distribucion[i]});
+            }
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -469,7 +478,68 @@ public class VentanaCajero extends javax.swing.JFrame {
 
     private void BretirarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BretirarActionPerformed
         // TODO add your handling code here:
-
+        if (clienteActual == null) {
+            JOptionPane.showMessageDialog(this, "Primero ingrese el número de cajero y de cuenta.");
+            return;
+        }
+        
+        String texto = pantalla.getText().trim();
+        if (texto.isEmpty() || mostrar_mensaje == true) {
+            pantalla.setText("Escriba un monto por favor");
+            mostrar_mensaje = true;
+            return;
+        }
+        
+        int monto = Integer.parseInt(texto);
+        try {
+            Cajero cajero = cajeroDAO.buscarPorId(cajeroActual.getId());
+            Cliente cliente = clienteDAO.buscarPorId(clienteActual.getId());
+            Dispensador dispensador = new Dispensador(cajero);
+            
+            String error = dispensador.validar_monto(monto);
+            if (!error.isEmpty()) {
+                pantalla.setText(error);
+                mostrar_mensaje = true;
+                return;
+            }
+            
+            int [] distribucion = dispensador.calcular_distribucion(monto);
+            if (distribucion == null) {
+                pantalla.setText("El cajero no tiene billetes suficientes para entregar ese monto, \npor favor intente con otro monto.");
+                mostrar_mensaje = true;
+                return;
+            }
+            
+            if (cliente.getSaldo() < monto) {
+                pantalla.setText("Saldo insuficiente, su saldo es de " + String.format("%,.2f", cliente.getSaldo()));
+                mostrar_mensaje = true;
+                return;
+            }
+            
+            double nuevoSaldo = cliente.getSaldo() - monto;
+            dispensador.descontar_billetes(cajero, distribucion);
+            clienteDAO.actualizarSaldo(cliente.getId(), nuevoSaldo);
+            cajeroDAO.actualizarBilletes(cajero);
+            
+            String mensaje = "Retiro exitoso de: " + String.format("%,d", monto) + "\n";
+            for (int i = 0; i < distribucion.length; i++) {
+                if (distribucion[i] > 0) {
+                mensaje += distribucion[i] + " de " + String.format("%,d", Dispensador.denominaciones[i]) + "\n";
+                }
+            }
+            
+            mensaje += "Saldo restante: " + String.format("%,.2f", nuevoSaldo);
+            liberar();
+            txtNumCuenta.setText("");
+            mostrarBilletesEntregados(distribucion);
+            pantalla.setText(mensaje);
+            mostrar_mensaje = true;
+            
+        } catch (SQLException ex) {
+            liberar();
+            pantalla.setText("Error en el SQL:" + ex.getMessage());
+            mostrar_mensaje = true;
+        }
     }//GEN-LAST:event_BretirarActionPerformed
 
     private void btnIngresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIngresarActionPerformed
@@ -627,11 +697,7 @@ public class VentanaCajero extends javax.swing.JFrame {
         else{
             pantalla.append(digito);
         }
-    }
-    
-    private void actualizar_tabla(){
-        
-    }    
+    }   
     /**
      * @param args the command line arguments
      */

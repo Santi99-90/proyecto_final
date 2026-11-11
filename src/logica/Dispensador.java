@@ -12,7 +12,7 @@ import java.util.HashMap;
  */
 public class Dispensador {
     HashMap<Integer, Integer> cajero_automatico = new HashMap<>();
-    private static final int[] denominaciones = {10000, 20000, 50000, 100000};
+    public static final int[] denominaciones = {10000, 20000, 50000, 100000};
     
 
     public Dispensador(Cajero c) {
@@ -41,7 +41,7 @@ public class Dispensador {
     
     private int repartir(int monto, int [] billetes){
         for (int i = denominaciones.length - 1; i >= 0; i--) {
-            int disponibles = obtener_cantidad(denominaciones[i] - billetes[i]);
+            int disponibles = obtener_cantidad(denominaciones[i]) - billetes[i];
             int necesarios = monto / denominaciones[i];
             int usar = Math.min(necesarios, disponibles);
             billetes[i] += usar;
@@ -61,8 +61,7 @@ public class Dispensador {
         }
 
         // Regla especial de 100.000 o más: 1 de 10.000, 2 de 20.000 y 1 de 50.000 (si los hay)
-        if (monto >= 100000 && obtener_cantidad(10000) >= 1
-                && obtener_cantidad(20000) >= 2 && obtener_cantidad(50000) >= 1) {
+        if (monto >= 100000 && obtener_cantidad(10000) >= 1 && obtener_cantidad(20000) >= 2 && obtener_cantidad(50000) >= 1) {
             billetes[0] = 1;
             billetes[1] = 2;
             billetes[2] = 1;
