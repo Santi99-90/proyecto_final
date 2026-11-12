@@ -784,7 +784,7 @@ public class VentanaCajero extends javax.swing.JFrame {
         else{
             pantalla.append(digito);
         }
-    }   
+    } 
     /**
      * @param args the command line arguments
      */
