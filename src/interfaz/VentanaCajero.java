@@ -278,6 +278,11 @@ public class VentanaCajero extends javax.swing.JFrame {
         });
 
         btnTransferir.setText("Transferir");
+        btnTransferir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTransferirActionPerformed(evt);
+            }
+        });
 
         btnCancelar.setText("Cancelar");
         btnCancelar.addActionListener(new java.awt.event.ActionListener() {
@@ -684,6 +689,88 @@ public class VentanaCajero extends javax.swing.JFrame {
         inicio.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnVolverActionPerformed
+
+    private void btnTransferirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTransferirActionPerformed
+        // TODO add your handling code here:
+        if (clienteActual == null) {
+            JOptionPane.showMessageDialog(this, "Primero ingrese el número de cajero y de cuenta.");
+            return;
+        }
+        
+        String texto = pantalla.getText().trim();
+        if (texto.isEmpty() || mostrar_mensaje == true) {
+            pantalla.setText("Escriba un monto por favor");
+            mostrar_mensaje = true;
+            return;
+        }
+        int monto = Integer.parseInt(texto);
+        if (monto <= 0) {
+            pantalla.setText("Error: el monto a transferir debe ser mayor que 0");
+            mostrar_mensaje = true;
+            return;
+        }
+        
+        int cuentaDestino;
+        try {
+            cuentaDestino = Integer.parseInt(txtCuentaDestino.getText().trim());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Escriba un número de cuenta destino válido.");
+            return;
+        }
+        
+        try {
+            Cliente destino = clienteDAO.buscarPorCuenta(cuentaDestino);
+            if (destino == null) {
+                pantalla.setText("La cuenta destino " + cuentaDestino + " no existe.");
+                mostrar_mensaje = true;
+                return;
+            }
+            if (destino.getId() == clienteActual.getId()) {
+                pantalla.setText("No puede trasnferir dinero a su misma cuenta");
+                mostrar_mensaje = true;
+                return;
+            }
+            if (destino.getEstado() == 1) {
+                pantalla.setText("esa cuenta que quiere transferirle esta ocupada haciendo una operacion");
+                mostrar_mensaje = true;
+                return;
+            }
+            
+            String mensaje;
+            boolean exito = false;
+            clienteDAO.cambiarEstado(destino.getId(), 1);
+            try {
+                Cliente origen = clienteDAO.buscarPorId(clienteActual.getId());
+                Cliente dest = clienteDAO.buscarPorId(destino.getId());
+                if (origen.getSaldo() < monto) {
+                    mensaje = "Saldo insuficiente. Su saldo es: " + String.format("%,.2f", origen.getSaldo());
+                }
+                else{
+                    double nuevoSaldoOrigen = origen.getSaldo() - monto;
+                    double nuevoSaldoDestino = dest.getSaldo() + monto;
+                    clienteDAO.actualizarSaldo(origen.getId(), nuevoSaldoOrigen);
+                    clienteDAO.actualizarSaldo(dest.getId(), nuevoSaldoDestino);
+                    mensaje = "Transferencia exitosa de: " + String.format("%,d", monto) + "\nA: " + dest.getNombre() + " " + dest.getApellido() + "\nSaldo restante: " + String.format("%,.2f", nuevoSaldoOrigen);
+                    exito = true;
+                }
+            } finally {
+                clienteDAO.cambiarEstado(destino.getId(), 0);
+            }
+            
+            if (exito) {
+                liberar();
+                txtNumCuenta.setText("");
+                txtCuentaDestino.setText("");
+                ((DefaultTableModel) tabla_billetes.getModel()).setRowCount(0);
+            }
+            pantalla.setText(mensaje);
+            mostrar_mensaje = true;
+        } catch (SQLException ex) {
+            liberar();
+            pantalla.setText("Error en el SQL: " + ex.getMessage());
+            mostrar_mensaje = true;
+        }
+    }//GEN-LAST:event_btnTransferirActionPerformed
 
     private void agregar_digito(String digito){
         if (mostrar_mensaje == true) {
